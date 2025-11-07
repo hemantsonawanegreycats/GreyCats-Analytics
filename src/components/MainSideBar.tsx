@@ -26,103 +26,157 @@ import {
 import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { LuCircleChevronRight } from "react-icons/lu";
 
 function MainSideBar(): React.JSX.Element {
-  const [activeTab, setActive] = useState("/");
   const location = useLocation();
-  console.log(location.pathname); // 👉 gives you the current path (e.g. "/dashboard")
+  const [activeTab, setActive] = useState(location.pathname);
+  const [collabsState, setcollabsState] = useState<boolean>(false);
+
+  console.log(location.pathname, activeTab); // 👉 gives you the current path (e.g. "/dashboard")
 
   const navigate = useNavigate();
 
-  const handleChangeURL = (tab: string): void => {
-    const path = tab === "/" ? "/" : `/${tab}`;
+  const handleChangeURL = (path: string): void => {
     navigate(path);
-    setActive(tab);
+    setActive(path);
   };
 
   return (
     <div className=" flex ">
-      <SidebarProvider className="w-[16rem]">
-        <Sidebar className="w-[16rem]  h-screen">
-          <SidebarContent className="bg-white px-2 ">
+      <SidebarProvider
+        className={` transition-[width] duration-300 ease-in-out ${
+          !collabsState ? "w-[16rem]" : "w-22"
+        } `}
+      >
+        <Sidebar
+          className={`transition-[width] duration-300 ease-in-out ${
+            !collabsState ? "w-[16rem]" : "w-22"
+          }   h-screen`}
+        >
+          <SidebarContent
+            className={` ${!collabsState ? "px-2" : "px-0"}bg-white px-2 `}
+          >
             {/* Brand / Title */}
             <SidebarGroup>
-              <SidebarGroupLabel className="p-0 w-full px-2 py-8 pb-9 border-b">
+              <SidebarGroupLabel className="p-0 w-full relative justify-between px-2 py-8 pb-9 border-b">
                 <span className="text-xl">Analyst</span>
+                <span
+                  className="absolute right-0"
+                  onClick={() => setcollabsState(!collabsState)}
+                >
+                  <LuCircleChevronRight
+                    className={`text-xl transform ${
+                      collabsState ? "scale-x-[1]" : "scale-x-[-1]"
+                    }`}
+                  />
+                </span>
               </SidebarGroupLabel>
             </SidebarGroup>
 
             {/* MAIN */}
             <SidebarGroup>
-              <SidebarGroupLabel className="uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 px-3">
+              <SidebarGroupLabel
+                className={`uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 ${
+                  !collabsState
+                    ? "px-3"
+                    : "px-0 flex justify-center text-[9px] font-bold "
+                }`}
+              >
                 Main
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem key="dashboards">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer data-[active=true]:bg-gray-100 ${
-                        activeTab === "/" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/$/.test(activeTab) ? "bg-gray-100" : ""
                       } `}
                       isActive={activeTab === "/"}
                       onClick={() => handleChangeURL("/")}
                     >
                       <FiLayout
                         className={` ${
-                          activeTab === "/" ? "text-2xl" : "text-gray-900"
+                          /^\/$/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "/" ? "" : "text-gray-900"
-                        }`}
-                      >
-                        Dashboards
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/$/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Dashboards
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="clients">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "clients" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/clients(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "clients"}
-                      onClick={() => handleChangeURL("clients")}
+                      isActive={activeTab === "/clients"}
+                      onClick={() => handleChangeURL("/clients")}
                     >
                       <FiUsers
                         className={` ${
-                          activeTab === "clients" ? "text-2xl" : "text-gray-600"
+                          /^\/clients(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "clients" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Clients
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/clients(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Clients
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="reports">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "reports" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/reports(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "reports"}
-                      onClick={() => handleChangeURL("reports")}
+                      isActive={activeTab === "/reports"}
+                      onClick={() => handleChangeURL("/reports")}
                     >
                       <FiFileText
                         className={` ${
-                          activeTab === "reports" ? "text-xl" : "text-gray-600"
+                          /^\/reports(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "reports" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Reports
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/reports(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Reports
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -131,75 +185,105 @@ function MainSideBar(): React.JSX.Element {
 
             {/* WORK */}
             <SidebarGroup>
-              <SidebarGroupLabel className="uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 px-3">
+              <SidebarGroupLabel
+                className={`uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 ${
+                  !collabsState
+                    ? "px-3"
+                    : "px-0 flex justify-center text-[9px] font-bold "
+                }`}
+              >
                 Work
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem key="goals">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "goals" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/goals(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "goals"}
-                      onClick={() => handleChangeURL("goals")}
+                      isActive={activeTab === "/goals"}
+                      onClick={() => handleChangeURL("/goals")}
                     >
                       <FiTarget
                         className={` ${
-                          activeTab === "goals" ? "text-xl" : "text-gray-600"
+                          /^\/goals(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "goals" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Goals
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/goals(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Goals
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="tasks">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "tasks" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/tasks(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "tasks"}
-                      onClick={() => handleChangeURL("tasks")}
+                      isActive={activeTab === "/tasks"}
+                      onClick={() => handleChangeURL("/tasks")}
                     >
                       <FiCheckSquare
                         className={` ${
-                          activeTab === "tasks" ? "text-xl" : "text-gray-600"
+                          /^\/tasks(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "tasks" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Tasks
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/tasks(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Tasks
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="alerts">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "alerts" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/alerts(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "alerts"}
-                      onClick={() => handleChangeURL("alerts")}
+                      isActive={activeTab === "/alerts"}
+                      onClick={() => handleChangeURL("/alerts")}
                     >
                       <FiBell
                         className={` ${
-                          activeTab === "alerts" ? "text-xl" : "text-gray-600"
+                          /^\/alerts(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "alerts" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Alerts
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/alerts(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Alerts
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -208,55 +292,77 @@ function MainSideBar(): React.JSX.Element {
 
             {/* DATA */}
             <SidebarGroup>
-              <SidebarGroupLabel className="uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 px-3">
+              <SidebarGroupLabel
+                className={`uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 ${
+                  !collabsState
+                    ? "px-3"
+                    : "px-0 flex justify-center text-[9px] font-bold "
+                }`}
+              >
                 Data
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem key="sources">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "sources" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/sources(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "sources"}
-                      onClick={() => handleChangeURL("sources")}
+                      isActive={activeTab === "/sources"}
+                      onClick={() => handleChangeURL("/sources")}
                     >
                       <FiDatabase
                         className={` ${
-                          activeTab === "sources" ? "text-xl" : "text-gray-600"
+                          /^\/sources(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "sources" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Sources
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/sources(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Sources
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="templates">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "templates" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/templates(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "templates"}
-                      onClick={() => handleChangeURL("templates")}
+                      isActive={activeTab === "/templates"}
+                      onClick={() => handleChangeURL("/templates")}
                     >
                       <FiLayers
                         className={` ${
-                          activeTab === "templates"
+                          /^\/templates(\/|$)/.test(activeTab)
                             ? "text-xl"
                             : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "templates" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Templates
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/templates(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Templates
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -265,57 +371,79 @@ function MainSideBar(): React.JSX.Element {
 
             {/* SETTINGS */}
             <SidebarGroup>
-              <SidebarGroupLabel className="uppercase tracking-wide mb-2 text-[13px]  font-semibold text-muted-foreground/80 px-3">
+              <SidebarGroupLabel
+                className={`uppercase mb-[0.4rem] tracking-wide text-[13px]  font-semibold text-muted-foreground/80 ${
+                  !collabsState
+                    ? "px-3"
+                    : "px-0 flex justify-center text-[9px] font-bold "
+                }`}
+              >
                 Settings
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem key="bulk-actions">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "bulk-actions" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/bulk-actions(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "bulk-actions"}
-                      onClick={() => handleChangeURL("bulk-actions")}
+                      isActive={activeTab === "/bulk-actions"}
+                      onClick={() => handleChangeURL("/bulk-actions")}
                     >
                       <FiDownload
                         className={` ${
-                          activeTab === "bulk-actions"
+                          /^\/bulk-actions(\/|$)/.test(activeTab)
                             ? "text-xl"
                             : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "bulk-actions" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Bulk Actions
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/bulk-actions(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Bulk Actions
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem key="account-setup">
                     <SidebarMenuButton
-                      className={`text-[1rem]  font-normal h-11 px-4 hover:cursor-pointer ${
-                        activeTab === "account-setup" ? "bg-gray-100" : ""
+                      className={`text-[1rem]  font-normal h-11 transition-[width] duration-300 ease-in-out ${
+                        !collabsState
+                          ? "px-4"
+                          : "flex justify-center items-center"
+                      } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
+                        /^\/account-setup(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
                       }`}
-                      isActive={activeTab === "account-setup"}
-                      onClick={() => handleChangeURL("account-setup")}
+                      isActive={activeTab === "/account-setup"}
+                      onClick={() => handleChangeURL("/account-setup")}
                     >
                       <FiSettings
                         className={` ${
-                          activeTab === "account-setup"
-                            ? "text-2xl"
+                          /^\/account-setup(\/|$)/.test(activeTab)
+                            ? "text-xl"
                             : "text-gray-600"
                         }`}
                       />
-                      <span
-                        className={` ${
-                          activeTab === "account-setup" ? "" : "text-gray-600"
-                        }`}
-                      >
-                        Account Setup
-                      </span>
+                      {!collabsState ? (
+                        <span
+                          className={` ${
+                            /^\/account-setup(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                          }`}
+                        >
+                          Account Setup
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -328,14 +456,18 @@ function MainSideBar(): React.JSX.Element {
                 <div className="flex size-9 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-100">
                   AV
                 </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium leading-tight">
-                    Alex Cohen
+                {!collabsState ? (
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium leading-tight">
+                      Alex Cohen
+                    </div>
+                    <div className="text-xs text-muted-foreground leading-tight">
+                      Analyst
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground leading-tight">
-                    Analyst
-                  </div>
-                </div>
+                ) : (
+                  ""
+                )}
               </div>
             </SidebarFooter>
           </SidebarContent>

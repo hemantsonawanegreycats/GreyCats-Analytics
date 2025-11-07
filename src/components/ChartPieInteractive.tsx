@@ -1,5 +1,6 @@
 
 import * as React from "react"
+import { ResponsiveContainer } from "recharts"
 import { Label, Pie, PieChart, Sector, Tooltip, Cell } from "recharts"
 import type { PieSectorDataItem } from "recharts/types/polar/Pie"
 
@@ -81,6 +82,7 @@ export function ChartPieInteractive() {
       </div>
       <div className="flex flex-1 justify-center pb-0 p-4">
         <div className="mx-auto aspect-square w-full max-w-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart width={300} height={300}>
             <Tooltip />
             <Pie
@@ -136,6 +138,7 @@ export function ChartPieInteractive() {
               />
             </Pie>
           </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
