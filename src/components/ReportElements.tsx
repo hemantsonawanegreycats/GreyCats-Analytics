@@ -1,65 +1,90 @@
 import { SiBaremetrics } from "react-icons/si";
-import { LuBlocks } from "react-icons/lu";
+import { LuBlocks, LuMap } from "react-icons/lu";
 import { MdOutlineBrokenImage } from "react-icons/md";
 import { ImEmbed2 } from "react-icons/im";
 import { RiCustomSize } from "react-icons/ri";
-import { useState } from "react";
+import type { IconType } from "react-icons";
+
+import { type ReportWidgetType } from "./reportTypes";
+
+type ReportElementDefinition = {
+  id: string;
+  label: string;
+  icon: IconType;
+  widgetType: ReportWidgetType;
+};
+
+const reportElements: ReportElementDefinition[] = [
+  {
+    id: "metric",
+    label: "Metric",
+    icon: SiBaremetrics,
+    widgetType: "metric",
+  },
+  {
+    id: "chart",
+    label: "Chart",
+    icon: LuBlocks,
+    widgetType: "chart",
+  },
+  {
+    id: "map",
+    label: "Map",
+    icon: LuMap,
+    widgetType: "map",
+  },
+  {
+    id: "table",
+    label: "Table",
+    icon: RiCustomSize,
+    widgetType: "table",
+  },
+  {
+    id: "image",
+    label: "Image",
+    icon: MdOutlineBrokenImage,
+    widgetType: "image",
+  },
+  {
+    id: "embed",
+    label: "Embed",
+    icon: ImEmbed2,
+    widgetType: "embed",
+  },
+  {
+    id: "custom",
+    label: "Custom",
+    icon: SiBaremetrics,
+    widgetType: "custom",
+  },
+];
 
 function ReportElements() {
-  const [collabesState, setCollabesState] = useState<boolean>(false);
-  return (
-    <>
-      <div
-        className={`${
-          collabesState ? "w-70" : "hidden"
-        } w-70 h-full  -left-60 bg-background transition-all duration-300 ease-in-out `}
-      ></div>
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    widgetType: ReportWidgetType
+  ) => {
+    e.dataTransfer.setData("widgetType", widgetType);
+    e.dataTransfer.effectAllowed = "copy";
+  };
 
-      <div className="w-24 relative  h-full border-l ">
+  return (
+    <div className="w-full h-full border-l">
+      {reportElements.map(({ id, label, icon: Icon, widgetType }) => (
         <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1 "
+          draggable
+          onDragStart={(e) => handleDragStart(e, widgetType)}
+          key={id}
+          role="button"
+          aria-label={`Drag ${label} widget to dashboard`}
+          tabIndex={0}
+          className="flex flex-col items-center justify-center py-6 gap-1 cursor-grab active:cursor-grabbing text-gray-600 hover:bg-gray-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
         >
-          <SiBaremetrics className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
+          <Icon className="text-xl" aria-hidden="true" />
+          <span className="text-sm text-gray-500">{label}</span>
         </div>
-        <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1"
-        >
-          <LuBlocks className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
-        </div>{" "}
-        <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1"
-        >
-          <MdOutlineBrokenImage className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
-        </div>{" "}
-        <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1"
-        >
-          <ImEmbed2 className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
-        </div>
-        <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1"
-        >
-          <RiCustomSize className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
-        </div>
-        <div
-          onClick={() => setCollabesState(!collabesState)}
-          className="flex flex-col items-center justify-center py-6 gap-1"
-        >
-          <SiBaremetrics className="text-xl" />
-          <span className="text-sm text-gray-500">Metrics</span>
-        </div>
-      </div>
-    </>
+      ))}
+    </div>
   );
 }
 

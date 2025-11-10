@@ -27,7 +27,7 @@ const pages = [
 
 function WidgetsPageSideComponent() {
   return (
-    <div className="w-1/8  bg-sidebar-primary-foreground border-r h-full">
+    <div className="w-full  h-full ">
       <div className="w-full px-4 p-3  font-medium">Pages</div>
 
       <div className="w-full p-4">

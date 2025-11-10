@@ -23,7 +23,7 @@ import {
   FiDownload,
   FiSettings,
 } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { LuCircleChevronRight } from "react-icons/lu";
@@ -42,10 +42,18 @@ function MainSideBar(): React.JSX.Element {
     setActive(path);
   };
 
+  useEffect(() => {
+    const isSideBarOnReportBuilderPage = /^\/reports\/.+/.test(
+      location.pathname
+    );
+    if (isSideBarOnReportBuilderPage && collabsState === false)
+      setcollabsState(true);
+  }, []);
+
   return (
     <div className=" flex ">
       <SidebarProvider
-        className={` transition-[width] duration-300 ease-in-out ${
+        className={` transition-[width]  duration-300 ease-in-out ${
           !collabsState ? "w-[16rem]" : "w-22"
         } `}
       >
@@ -139,7 +147,9 @@ function MainSideBar(): React.JSX.Element {
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/clients(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/clients(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Clients
@@ -163,13 +173,17 @@ function MainSideBar(): React.JSX.Element {
                     >
                       <FiFileText
                         className={` ${
-                          /^\/reports(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
+                          /^\/reports(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/reports(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/reports(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Reports
@@ -210,13 +224,17 @@ function MainSideBar(): React.JSX.Element {
                     >
                       <FiTarget
                         className={` ${
-                          /^\/goals(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
+                          /^\/goals(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/goals(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/goals(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Goals
@@ -240,13 +258,17 @@ function MainSideBar(): React.JSX.Element {
                     >
                       <FiCheckSquare
                         className={` ${
-                          /^\/tasks(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
+                          /^\/tasks(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/tasks(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/tasks(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Tasks
@@ -270,13 +292,17 @@ function MainSideBar(): React.JSX.Element {
                     >
                       <FiBell
                         className={` ${
-                          /^\/alerts(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
+                          /^\/alerts(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/alerts(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/alerts(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Alerts
@@ -317,13 +343,17 @@ function MainSideBar(): React.JSX.Element {
                     >
                       <FiDatabase
                         className={` ${
-                          /^\/sources(\/|$)/.test(activeTab) ? "text-xl" : "text-gray-600"
+                          /^\/sources(\/|$)/.test(activeTab)
+                            ? "text-xl"
+                            : "text-gray-600"
                         }`}
                       />
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/sources(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/sources(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Sources
@@ -340,7 +370,9 @@ function MainSideBar(): React.JSX.Element {
                           ? "px-4"
                           : "flex justify-center items-center"
                       } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
-                        /^\/templates(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
+                        /^\/templates(\/|$)/.test(activeTab)
+                          ? "bg-gray-100"
+                          : ""
                       }`}
                       isActive={activeTab === "/templates"}
                       onClick={() => handleChangeURL("/templates")}
@@ -355,7 +387,9 @@ function MainSideBar(): React.JSX.Element {
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/templates(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/templates(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Templates
@@ -389,7 +423,9 @@ function MainSideBar(): React.JSX.Element {
                           ? "px-4"
                           : "flex justify-center items-center"
                       } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
-                        /^\/bulk-actions(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
+                        /^\/bulk-actions(\/|$)/.test(activeTab)
+                          ? "bg-gray-100"
+                          : ""
                       }`}
                       isActive={activeTab === "/bulk-actions"}
                       onClick={() => handleChangeURL("/bulk-actions")}
@@ -404,7 +440,9 @@ function MainSideBar(): React.JSX.Element {
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/bulk-actions(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/bulk-actions(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Bulk Actions
@@ -421,7 +459,9 @@ function MainSideBar(): React.JSX.Element {
                           ? "px-4"
                           : "flex justify-center items-center"
                       } hover:cursor-pointer data-[active=true]:bg-gray-100 ${
-                        /^\/account-setup(\/|$)/.test(activeTab) ? "bg-gray-100" : ""
+                        /^\/account-setup(\/|$)/.test(activeTab)
+                          ? "bg-gray-100"
+                          : ""
                       }`}
                       isActive={activeTab === "/account-setup"}
                       onClick={() => handleChangeURL("/account-setup")}
@@ -436,7 +476,9 @@ function MainSideBar(): React.JSX.Element {
                       {!collabsState ? (
                         <span
                           className={` ${
-                            /^\/account-setup(\/|$)/.test(activeTab) ? "" : "text-gray-600"
+                            /^\/account-setup(\/|$)/.test(activeTab)
+                              ? ""
+                              : "text-gray-600"
                           }`}
                         >
                           Account Setup
