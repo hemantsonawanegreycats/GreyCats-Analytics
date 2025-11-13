@@ -1,7 +1,12 @@
-type TableBodyType = {
+import { Link } from "react-router-dom";
+import type { IconType } from "react-icons";
+import { getStatusBadgeClass } from "../utils/statusColors";
+
+type ClientRow = {
   profile: {
     name: string;
     website: string;
+    icon?: string;
   };
   FBLikes: number;
   FBTrend: number;
@@ -9,7 +14,17 @@ type TableBodyType = {
   GATrend: number;
 };
 
-export type TableRowReport = {
+type IntegrationRow = {
+  name: string;
+  icon?: string | IconType;
+  link: string;
+  label: string;
+  identifier: string;
+  clientsConnected: number;
+  status: string;
+};
+
+type ReportRow = {
   name: string;
   client: string;
   type: string;
@@ -21,79 +36,115 @@ export type TableRowReport = {
   nextSendDate: string;
   awaitingApproval: boolean;
   lastSentStatus: string;
-  
 };
 
 type TableType = {
   header: string[];
-  bodyData: TableBodyType[] | TableRowReport[];
+  bodyData: (ClientRow | IntegrationRow | ReportRow)[];
 };
 
 function TableComponent({ header, bodyData }: TableType) {
-  const isReportTable = (row: any): row is TableRowReport => "client" in row;
+  // Type guards
+  const isIntegrationRow = (row: any): row is IntegrationRow =>
+    "identifier" in row && "link" in row;
+  const isClientRow = (row: any): row is ClientRow => "profile" in row;
+  const isReportRow = (row: any): row is ReportRow =>
+    "client" in row && "scheduleStatus" in row;
+
+  const renderIcon = (icon: string | IconType | undefined, name: string) => {
+    if (!icon) return null;
+    if (typeof icon === "string") {
+      return (
+        <img
+          src={icon}
+          alt={name}
+          className="w-5 h-5 rounded-full object-cover"
+        />
+      );
+    }
+    const IconComponent = icon as IconType;
+    return <IconComponent className="w-5 h-5 text-gray-700" />;
+  };
+
+  const renderStatusChip = (status: string) => {
+    const colorClass = getStatusBadgeClass(status);
+
+    return (
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-md whitespace-nowrap ${colorClass}`}
+      >
+        {status}
+      </span>
+    );
+  };
 
   return (
     <div className="border w-full rounded-[0.7rem] overflow-hidden">
-      <div className="h-[76vh] overflow-auto">
+      <div className="h-[78vh] overflow-auto">
         <table className="w-full table-auto min-w-max">
-          <thead className="bg-gray-50 border-b sticky top-0 z-10">
+          <thead className="bg-gradient-to-tr from-[#F3F3F3] to-white border-b sticky top-0 z-10">
             <tr className="text-left uppercase">
               {header.map((h, i) => (
                 <th
                   key={h}
-                  className={`${i === 0 ? "pl-6" : "pl-2"} pr-6 py-3 font-medium text-sm text-gray-500 whitespace-nowrap bg-gray-50`}
+                  className={`${
+                    i === 0 ? "pl-6" : "pl-2"
+                  } pr-6 py-3 font-medium text-sm text-gray-500 whitespace-nowrap`}
                 >
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
+
           <tbody className="bg-white">
             {bodyData.map((row, index) => (
-              <tr key={index} className="h-16 border-b border-gray-200">
-                {/* Conditional Rendering Based on Table Type */}
-                {isReportTable(row) ? (
+              <tr
+                key={index}
+                className="h-16 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+              >
+                {/* 🔹 Integration Table */}
+                {isIntegrationRow(row) && (
                   <>
                     <td className="pl-6 pr-6 text-sm font-medium text-gray-700 whitespace-nowrap">
-                      {row.name}
+                      <Link
+                        to={row.link}
+                        className="flex items-center gap-2 text-accent-foreground hover:underline"
+                      >
+                        {renderIcon(row.icon, row.name)}
+                        <span>{row.name}</span>
+                      </Link>
                     </td>
                     <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.client}
+                      {row.label}
                     </td>
                     <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.type}
+                      {row.identifier}
                     </td>
                     <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.created}
+                      {row.clientsConnected}
                     </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.schedule}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.scheduleStatus}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.clientGroup}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.lastSent}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.nextSendDate}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.awaitingApproval ? "Yes" : "No"}
-                    </td>
-                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
-                      {row.lastSentStatus}
-                    </td>
+                    <td>{renderStatusChip(row.status)}</td>
                   </>
-                ) : (
+                )}
+
+                {/* 🔹 Client Table */}
+                {isClientRow(row) && (
                   <>
                     <td className="pl-6 pr-6 whitespace-nowrap">
                       <div className="flex gap-2 items-center">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center text-xs font-medium">
-                          {row.profile.name.charAt(0)}
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex justify-center items-center overflow-hidden">
+                          {row.profile.icon ? (
+                            <img
+                              src={row.profile.icon}
+                              alt={row.profile.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs font-medium  text-gray-600">
+                              {row.profile.name.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">
@@ -117,6 +168,41 @@ function TableComponent({ header, bodyData }: TableType) {
                     <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
                       {row.GATrend}
                     </td>
+                  </>
+                )}
+
+                {/* 🔹 Report Table */}
+                {isReportRow(row) && (
+                  <>
+                    <td className="pl-6 pr-6 text-sm font-medium text-gray-700 whitespace-nowrap">
+                      {row.name}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.client}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.type}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.created}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.schedule}
+                    </td>
+                    <td>{renderStatusChip(row.scheduleStatus)}</td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.clientGroup}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.lastSent}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.nextSendDate}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.awaitingApproval ? "Yes" : "No"}
+                    </td>
+                    <td>{renderStatusChip(row.lastSentStatus)}</td>
                   </>
                 )}
               </tr>

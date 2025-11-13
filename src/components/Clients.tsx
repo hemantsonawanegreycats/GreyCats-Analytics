@@ -43,20 +43,20 @@ function Clients() {
       </div>
       <div className="w-full px-5">
         <TableComponent
+          header={["Client", "FB Likes", "FB Trend", "GA Clicks", "GA Trend"]}
           bodyData={[
             {
               profile: {
                 name: "Nike",
-                website: "www.Nike.com",
+                website: "www.nike.com",
+                icon: "https://cdn-icons-png.flaticon.com/512/731/731962.png",
               },
-
               FBLikes: 18199,
-              FBTrend: 18199,
-              GAClicks: 18199,
-              GATrend: 18199,
+              FBTrend: 21000,
+              GAClicks: 17500,
+              GATrend: 18250,
             },
           ]}
-          header={["Client", "FB Clicks", "FB Trend", "GA Clicks", "GA Trend"]}
         />
       </div>
     </div>

@@ -7,5 +7,6 @@ export type ReportWidgetType =
   | "metric"
   | "image"
   | "embed"
-  | "custom";
+  | "custom"
+  | "title";
 

@@ -1,11 +1,13 @@
 import { SiBaremetrics } from "react-icons/si";
-import { LuBlocks, LuMap } from "react-icons/lu";
+import {  LuGauge, LuPlug, LuTarget } from "react-icons/lu";
 import { MdOutlineBrokenImage } from "react-icons/md";
 import { ImEmbed2 } from "react-icons/im";
-import { RiCustomSize } from "react-icons/ri";
+
+import { TbLetterCase } from "react-icons/tb";
 import type { IconType } from "react-icons";
 
 import { type ReportWidgetType } from "./reportTypes";
+import type { WidgetFormState } from "./ReportBuilder";
 
 type ReportElementDefinition = {
   id: string;
@@ -16,72 +18,87 @@ type ReportElementDefinition = {
 
 const reportElements: ReportElementDefinition[] = [
   {
-    id: "metric",
-    label: "Metric",
+    id: "integrations",
+    label: "Integrations",
+    icon: LuPlug,
+    widgetType: "custom",
+  },
+
+  {
+    id: "content-blocks",
+    label: "Content Blocks",
+    icon: TbLetterCase,
+    widgetType: "custom",
+  },
+
+  {
+    id: "images",
+    label: "Images",
+    icon: MdOutlineBrokenImage,
+    widgetType: "image",
+  },
+
+  { id: "embeds", label: "Embeds", icon: ImEmbed2, widgetType: "embed" },
+
+  {
+    id: "custom-metrics",
+    label: "Custom Metrics",
     icon: SiBaremetrics,
     widgetType: "metric",
   },
   {
-    id: "chart",
-    label: "Chart",
-    icon: LuBlocks,
-    widgetType: "chart",
-  },
-  {
-    id: "map",
-    label: "Map",
-    icon: LuMap,
-    widgetType: "map",
-  },
-  {
-    id: "table",
-    label: "Table",
-    icon: RiCustomSize,
-    widgetType: "table",
-  },
-  {
-    id: "image",
-    label: "Image",
-    icon: MdOutlineBrokenImage,
-    widgetType: "image",
-  },
-  {
-    id: "embed",
-    label: "Embed",
-    icon: ImEmbed2,
-    widgetType: "embed",
-  },
-  {
-    id: "custom",
-    label: "Custom",
-    icon: SiBaremetrics,
+    id: "benchmarks",
+    label: "Benchmarks",
+    icon: LuGauge,
     widgetType: "custom",
   },
+  { id: "goals", label: "Goals", icon: LuTarget, widgetType: "custom" },
 ];
 
-function ReportElements() {
-  const handleDragStart = (
-    e: React.DragEvent<HTMLDivElement>,
-    widgetType: ReportWidgetType
-  ) => {
-    e.dataTransfer.setData("widgetType", widgetType);
-    e.dataTransfer.effectAllowed = "copy";
-  };
+type ReportElementsType = {
+  setRightPanelTitle: React.Dispatch<React.SetStateAction<string>>;
+  setWidgetFormState: React.Dispatch<React.SetStateAction<WidgetFormState>>;
+};
+
+function ReportElements({ setRightPanelTitle, setWidgetFormState }: ReportElementsType) {
+
 
   return (
-    <div className="w-full h-full border-l">
+    <div className="w-24 h-full border-l ">
       {reportElements.map(({ id, label, icon: Icon, widgetType }) => (
         <div
-          draggable
-          onDragStart={(e) => handleDragStart(e, widgetType)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+
+              setWidgetFormState({
+                slideId: 0,
+                widgetId: "",
+                widgetType: "",
+              });
+              setRightPanelTitle((prev) => (prev === label ? "" : label));
+              
+            }
+          }}
+          onClick={() => {
+            setWidgetFormState({
+              slideId: 0,
+              widgetId: "",
+              widgetType: "",
+            });
+            setRightPanelTitle((prev) => {
+              if (prev === label) return "";
+              return label;
+            });
+          }}
           key={id}
           role="button"
-          aria-label={`Drag ${label} widget to dashboard`}
           tabIndex={0}
-          className="flex flex-col items-center justify-center py-6 gap-1 cursor-grab active:cursor-grabbing text-gray-600 hover:bg-gray-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+          aria-label={`Drag ${label} widget to dashboard`}
+          className="flex flex-col text-xs items-center justify-center text-center p-2 my-4 text-wrap gap-1 cursor-pointer active:cursor-grabbing text-gray-600 hover:bg-gray-50 "
         >
           <Icon className="text-xl" aria-hidden="true" />
-          <span className="text-sm text-gray-500">{label}</span>
+          <span className="text-xs text-gray-500">{label}</span>
         </div>
       ))}
     </div>

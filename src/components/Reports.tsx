@@ -6,7 +6,7 @@ import DropDownFilter from "./DropDownFilter";
 
 function Reports() {
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full min-h-full flex flex-col">
       <div className="w-full h-[4.8em] bg-white border-b flex justify-between items-center px-5 ">
         <span className="font-medium text-xl">Clients</span>
         <div className="flex items-center">
@@ -42,88 +42,50 @@ function Reports() {
         </div>
       </div>
       <div className="w-full px-5">
-        <TableComponent
-          bodyData={[
-            {
-              name: "Monthly Performance Report",
-              client: "Acme Corp",
-              type: "Analytics",
-              created: "2025-10-12",
-              schedule: "Monthly",
-              scheduleStatus: "Active",
-              clientGroup: "Enterprise",
-              lastSent: "2025-10-01",
-              nextSendDate: "2025-11-01",
-              awaitingApproval: false,
-              lastSentStatus: "Delivered",
-            },
-            {
-              name: "Social Media Insights",
-              client: "Bright Studio",
-              type: "Marketing",
-              created: "2025-09-20",
-              schedule: "Weekly",
-              scheduleStatus: "Paused",
-              clientGroup: "Agency",
-              lastSent: "2025-10-30",
-              nextSendDate: "2025-11-07",
-              awaitingApproval: true,
-              lastSentStatus: "Pending",
-            },
-            {
-              name: "Ad Campaign Overview",
-              client: "BlueSky Media",
-              type: "Advertising",
-              created: "2025-08-05",
-              schedule: "Monthly",
-              scheduleStatus: "Active",
-              clientGroup: "Premium",
-              lastSent: "2025-10-03",
-              nextSendDate: "2025-11-03",
-              awaitingApproval: false,
-              lastSentStatus: "Delivered",
-            },
-            {
-              name: "Quarterly Engagement Report",
-              client: "Nova Tech",
-              type: "Analytics",
-              created: "2025-07-18",
-              schedule: "Quarterly",
-              scheduleStatus: "Active",
-              clientGroup: "Corporate",
-              lastSent: "2025-09-30",
-              nextSendDate: "2025-12-30",
-              awaitingApproval: false,
-              lastSentStatus: "Delivered",
-            },
-            {
-              name: "Email Campaign Stats",
-              client: "Sunrise Apparel",
-              type: "Email",
-              created: "2025-09-01",
-              schedule: "Weekly",
-              scheduleStatus: "Active",
-              clientGroup: "Retail",
-              lastSent: "2025-10-31",
-              nextSendDate: "2025-11-07",
-              awaitingApproval: true,
-              lastSentStatus: "In Review",
-            },
-          ]}
-          header={[
-            "Name",
-            "Client",
-            "Type",
-            "Created",
-            "Schedule",
-            "Schedule Status",
-            "Client Group",
-            "Last Sent",
-            "Next Send Date",
-            "Awaiting Approval",
-            "Last Sent Status",
-          ]}
-        />
+       <TableComponent
+  header={[
+    "Name",
+    "Client",
+    "Type",
+    "Created",
+    "Schedule",
+    "Schedule Status",
+    "Client Group",
+    "Last Sent",
+    "Next Send Date",
+    "Awaiting Approval",
+    "Last Sent Status",
+  ]}
+  bodyData={[
+    {
+      name: "Monthly Performance Report",
+      client: "Acme Corp",
+      type: "Analytics",
+      created: "2025-10-12",
+      schedule: "Monthly",
+      scheduleStatus: "Active",
+      clientGroup: "Enterprise",
+      lastSent: "2025-10-01",
+      nextSendDate: "2025-11-01",
+      awaitingApproval: false,
+      lastSentStatus: "Delivered",
+    },
+    {
+      name: "Social Media Insights",
+      client: "Bright Studio",
+      type: "Marketing",
+      created: "2025-09-20",
+      schedule: "Weekly",
+      scheduleStatus: "Paused",
+      clientGroup: "Agency",
+      lastSent: "2025-10-30",
+      nextSendDate: "2025-11-07",
+      awaitingApproval: true,
+      lastSentStatus: "Pending",
+    },
+  ]}
+/>
+
       </div>
     </div>
   );
