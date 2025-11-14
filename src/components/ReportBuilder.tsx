@@ -8,6 +8,9 @@ import ChartWidgetForm from "./ChartWidgetForm";
 import TableWidgetForm from "./TableWidgetForm";
 import ImageWidgetForm from "./ImageWidgetForm";
 import EmbedWidgetForm from "./EmbedWidgetForm";
+import { DateRangePicker } from "./DateRangePicker";
+import { type DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 // Layout lib
 import GridLayout, { type Layout, WidthProvider } from "react-grid-layout";
@@ -478,11 +481,16 @@ const renderWidgetContent = (widget: DashboardLayout) => {
   }
 };
 
-export interface WidgetFormState extends Omit<DashboardLayout, "widgetType"> {
+export interface WidgetFormState {
   slideId: number;
   widgetId: string;
   widgetType: ReportWidgetType | "";
   data?: WidgetData;
+  i?: string;
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
 }
 
 function ReportBuilder() {
@@ -497,6 +505,7 @@ function ReportBuilder() {
     new Map()
   );
   const [rightPanelTitle, setRightPanelTitle] = useState<string>("");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   const [widgetFormState, setWidgetFormState] = useState<WidgetFormState>({
     slideId: 0,
@@ -826,13 +835,26 @@ function ReportBuilder() {
 
       {/* Sub Header */}
       <div className="sticky z-40 top-[var(--rb-header)] py-[1.2em] bg-white border-b flex justify-between items-center px-5">
-        <RadioButtonGroup />
+        <div className="flex items-center gap-4">
+       
+          <RadioButtonGroup />
+        </div>
+     <div className="flex gap-2">
+    <div >
+    <DateRangePicker
+            value={dateRange}
+            onChange={(range) => {
+              setDateRange(range);
+            }}
+          />
+    </div>
         <button
           onClick={handleExportPDF}
           className="bg-accent-foreground text-white py-2 px-4 rounded-[0.6rem] text-sm hover:cursor-pointer"
         >
           Download PDF
         </button>
+     </div>
       </div>
 
       {/* Main Content */}
@@ -848,11 +870,29 @@ function ReportBuilder() {
             const layout = dashboards.get(id);
             if (!layout) return null;
 
+            // Format date range for display
+            const formatDateRange = () => {
+              if (!dateRange?.from && !dateRange?.to) {
+                return undefined;
+              }
+              if (dateRange.from && dateRange.to) {
+                return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`;
+              }
+              if (dateRange.from) {
+                return `From ${format(dateRange.from, "MMM d, yyyy")}`;
+              }
+              if (dateRange.to) {
+                return `Until ${format(dateRange.to, "MMM d, yyyy")}`;
+              }
+              return undefined;
+            };
+
             return (
               <SlideContainer
                 key={id}
                 id={`slide-${id}`}
                 title={`Slide #${id + 1}`}
+                dateRange={formatDateRange()}
                 containerRef={(el) => {
                   slidesRef.current[i] = el;
                 }}

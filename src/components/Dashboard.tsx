@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { ChartLineMultiple } from "./ChartLineMultiple";
 import { ChartPieInteractive } from "./ChartPieInteractive";
 import { getChangeIndicatorClass } from "../utils/statusColors";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   return (
@@ -14,12 +15,12 @@ function Dashboard() {
           <div className="flex items-center gap-3 sm:gap-4">
             <FiSearch className="text-lg text-gray-500 cursor-pointer" />
             <FiBell className="text-lg text-gray-500 cursor-pointer" />
-            <Button className="rounded-md text-xs sm:text-sm md:text-base">
+            <Link to={"/edit-dashboard"}><Button className="rounded-md text-xs sm:text-sm md:text-base">
               Edit Dashboard
-            </Button>
+            </Button></Link>
           </div>
         </div>
-
+        {/* edit-dashobard */}
         {/* Stats Cards */}
         <div className="w-full flex flex-wrap gap-3 sm:gap-4 px-3 sm:px-5 py-4">
           {/* Card */}

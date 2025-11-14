@@ -76,43 +76,49 @@ function convertOklchInClonedDom(clonedDoc: Document) {
 export async function exportAllSlidesToPDF(
   slideRefs: (HTMLDivElement | null)[]
 ) {
-  // Use landscape orientation ("l" instead of "p")
-  const pdf = new jsPDF("l", "mm", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  // Reduced margins for better space utilization
-  const margin = 5; // 5mm margin on all sides (reduced from 10mm)
-  const contentWidth = pageWidth - margin * 2;
-  const contentHeight = pageHeight - margin * 2;
-
   // Filter only valid DOM elements
   const validSlides = slideRefs.filter(
     (ref): ref is HTMLDivElement => ref !== null
   );
+
+  if (validSlides.length === 0) return;
 
   // 🧩 1️⃣ Temporarily force RGB theme to avoid oklch() color error
   // Add pdf-safe class and wait for CSS to apply
   document.documentElement.classList.add("pdf-safe");
   await new Promise((resolve) => setTimeout(resolve, 100)); // Longer delay for CSS
 
+  // Convert pixels to mm (assuming 96 DPI: 1px = 0.264583mm)
+  const pxToMm = 0.264583;
+
+  // First, measure all slides to get their dimensions
+  const slideDimensions: Array<{ width: number; height: number }> = [];
+  for (const slideElement of validSlides) {
+    slideElement.style.transform = "scale(1)";
+    slideElement.style.opacity = "1";
+    slideElement.style.display = "block";
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    
+    const slideRect = slideElement.getBoundingClientRect();
+    const slideWidth = slideElement.scrollWidth || slideRect.width;
+    const slideHeight = slideElement.scrollHeight || slideRect.height;
+    slideDimensions.push({ width: slideWidth, height: slideHeight });
+  }
+
+  // Create PDF with custom page size matching first slide
+  const firstWidth = slideDimensions[0].width;
+  const firstHeight = slideDimensions[0].height;
+  const pdf = new jsPDF({
+    orientation: firstWidth > firstHeight ? "landscape" : "portrait",
+    unit: "mm",
+    format: [firstWidth * pxToMm, firstHeight * pxToMm],
+  });
+
   for (let i = 0; i < validSlides.length; i++) {
     const slideElement = validSlides[i];
     if (!slideElement) continue;
 
-    // 🧩 2️⃣ Ensure all charts/maps have measurable sizes
-    // Sometimes Recharts gives -1 width/height if hidden or not painted yet
-    slideElement.style.transform = "scale(1)";
-    slideElement.style.opacity = "1";
-    slideElement.style.display = "block";
-
-    // Wait a bit for layout to stabilize
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-
-    // Get actual dimensions of the slide
-    const slideRect = slideElement.getBoundingClientRect();
-    const slideWidth = slideElement.scrollWidth || slideRect.width;
-    const slideHeight = slideElement.scrollHeight || slideRect.height;
+    const { width: slideWidth, height: slideHeight } = slideDimensions[i];
 
     // 🧩 3️⃣ Render canvas with safe options and convert oklch in cloned DOM
     const canvas = await html2canvas(slideElement, {
@@ -134,35 +140,26 @@ export async function exportAllSlidesToPDF(
 
     const imgData = canvas.toDataURL("image/png", 1.0);
 
-    // 🧩 4️⃣ Add each slide to PDF
-    if (i !== 0) pdf.addPage();
-
-    // Calculate aspect ratio
-    const canvasAspectRatio = canvas.width / canvas.height;
-
-    // For landscape PDF, always fit to width first for consistency
-    // This ensures all slides have the same width and appear at the same scale
-    let finalWidth = contentWidth;
-    let finalHeight = contentWidth / canvasAspectRatio;
-
-    // If the slide is too tall and would exceed page height, scale it down
-    if (finalHeight > contentHeight) {
-      // Scale down proportionally to fit height
-      const scaleFactor = contentHeight / finalHeight;
-      finalHeight = contentHeight;
-      finalWidth = finalWidth * scaleFactor;
+    // 🧩 4️⃣ Add each slide to PDF with custom page size
+    if (i !== 0) {
+      // Create new page with dimensions matching this slide
+      const pageWidthMm = slideWidth * pxToMm;
+      const pageHeightMm = slideHeight * pxToMm;
+      pdf.addPage([pageWidthMm, pageHeightMm], 
+        slideWidth > slideHeight ? "landscape" : "portrait"
+      );
     }
 
-    // Position: top-aligned with minimal top margin, centered horizontally
-    // This reduces excessive white space, especially for shorter slides
-    const xOffset = margin + (contentWidth - finalWidth) / 2;
-    const yOffset = margin; // Top-aligned instead of centered vertically
+    // Use slide's actual dimensions in mm
+    const finalWidth = slideWidth * pxToMm;
+    const finalHeight = slideHeight * pxToMm;
 
+    // Add image at full size, starting from top-left corner
     pdf.addImage(
       imgData,
       "PNG",
-      xOffset,
-      yOffset,
+      0,
+      0,
       finalWidth,
       finalHeight,
       undefined,

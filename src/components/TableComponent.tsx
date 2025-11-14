@@ -3,6 +3,7 @@ import type { IconType } from "react-icons";
 import { getStatusBadgeClass } from "../utils/statusColors";
 
 type ClientRow = {
+  id?: string | number;
   profile: {
     name: string;
     website: string;
@@ -25,6 +26,7 @@ type IntegrationRow = {
 };
 
 type ReportRow = {
+  id?: string | number;
   name: string;
   client: string;
   type: string;
@@ -38,9 +40,27 @@ type ReportRow = {
   lastSentStatus: string;
 };
 
+type AlertRow = {
+  metric: string;
+  client: string;
+  currentValue: string | number;
+  triggerValue: string | number;
+  interval: string;
+  lastTriggered: string;
+};
+
+type ClientDetailRow = {
+  metric: string;
+  client: string;
+  currentValue: string | number;
+  triggerValue: string | number;
+  interval: string;
+  lastTriggered: string;
+};
+
 type TableType = {
   header: string[];
-  bodyData: (ClientRow | IntegrationRow | ReportRow)[];
+  bodyData: (ClientRow | IntegrationRow | ReportRow | AlertRow | ClientDetailRow)[];
 };
 
 function TableComponent({ header, bodyData }: TableType) {
@@ -50,6 +70,10 @@ function TableComponent({ header, bodyData }: TableType) {
   const isClientRow = (row: any): row is ClientRow => "profile" in row;
   const isReportRow = (row: any): row is ReportRow =>
     "client" in row && "scheduleStatus" in row;
+  const isAlertRow = (row: any): row is AlertRow =>
+    "metric" in row && "currentValue" in row && "triggerValue" in row && "interval" in row && "lastTriggered" in row;
+  const isClientDetailRow = (row: any): row is ClientDetailRow =>
+    "metric" in row && "currentValue" in row && "triggerValue" in row && "interval" in row && "lastTriggered" in row && "client" in row;
 
   const renderIcon = (icon: string | IconType | undefined, name: string) => {
     if (!icon) return null;
@@ -147,9 +171,18 @@ function TableComponent({ header, bodyData }: TableType) {
                           )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium">
-                            {row.profile.name}
-                          </span>
+                          {row.id ? (
+                            <Link
+                              to={`/clients/${row.id}`}
+                              className="text-sm font-medium text-accent-foreground hover:underline"
+                            >
+                              {row.profile.name}
+                            </Link>
+                          ) : (
+                            <span className="text-sm font-medium">
+                              {row.profile.name}
+                            </span>
+                          )}
                           <span className="text-xs text-gray-500">
                             {row.profile.website}
                           </span>
@@ -175,7 +208,16 @@ function TableComponent({ header, bodyData }: TableType) {
                 {isReportRow(row) && (
                   <>
                     <td className="pl-6 pr-6 text-sm font-medium text-gray-700 whitespace-nowrap">
-                      {row.name}
+                      {row.id ? (
+                        <Link
+                          to={`/reports/${row.id}`}
+                          className="text-accent-foreground hover:underline"
+                        >
+                          {row.name}
+                        </Link>
+                      ) : (
+                        row.name
+                      )}
                     </td>
                     <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
                       {row.client}
@@ -203,6 +245,54 @@ function TableComponent({ header, bodyData }: TableType) {
                       {row.awaitingApproval ? "Yes" : "No"}
                     </td>
                     <td>{renderStatusChip(row.lastSentStatus)}</td>
+                  </>
+                )}
+
+                {/* 🔹 Alert Table */}
+                {isAlertRow(row) && (
+                  <>
+                    <td className="pl-6 pr-6 text-sm font-medium text-gray-700 whitespace-nowrap">
+                      {row.metric}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.client}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.currentValue}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.triggerValue}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.interval}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.lastTriggered}
+                    </td>
+                  </>
+                )}
+
+                {/* 🔹 Client Detail Table */}
+                {isClientDetailRow(row) && (
+                  <>
+                    <td className="pl-6 pr-6 text-sm font-medium text-gray-700 whitespace-nowrap">
+                      {row.metric}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.client}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.currentValue}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.triggerValue}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.interval}
+                    </td>
+                    <td className="pl-2 pr-6 text-sm text-gray-600 whitespace-nowrap">
+                      {row.lastTriggered}
+                    </td>
                   </>
                 )}
               </tr>

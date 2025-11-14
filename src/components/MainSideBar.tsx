@@ -15,7 +15,6 @@ import {
 import type React from "react";
 import {
   LayoutDashboard,
-  Users,
   Target,
   CheckSquare,
   Bell,
@@ -34,7 +33,16 @@ import { Button } from "./ui/button";
 function MainSideBar(): React.JSX.Element {
   const location = useLocation();
   const [activeTab, setActive] = useState(location.pathname);
-  const [collabsState, setcollabsState] = useState<boolean>(false);
+  
+  // Initialize collapse state based on current route
+  const getInitialCollapseState = () => {
+    const isReportBuilder = /^\/reports\/.+/.test(location.pathname);
+    const isClientDetails = /^\/clients\/.+/.test(location.pathname);
+    const isEditDashboard = location.pathname.startsWith('/edit-dashboard');
+    return isReportBuilder || isClientDetails || isEditDashboard;
+  };
+  
+  const [collabsState, setcollabsState] = useState<boolean>(getInitialCollapseState());
 
   const navigate = useNavigate();
 
@@ -47,7 +55,14 @@ function MainSideBar(): React.JSX.Element {
     const isSideBarOnReportBuilderPage = /^\/reports\/.+/.test(
       location.pathname
     );
-    setcollabsState(isSideBarOnReportBuilderPage);
+    const isSideBarOnClientDetailsPage = /^\/clients\/.+/.test(
+      location.pathname
+    );
+
+    const isUserOnEditDashboard = location.pathname.startsWith('/edit-dashboard');
+
+    const shouldCollapse = isSideBarOnReportBuilderPage || isSideBarOnClientDetailsPage || isUserOnEditDashboard;
+    setcollabsState(shouldCollapse);
   }, [location.pathname]);
 
   const isAuthPage = /^\/(login|signup)$/.test(location.pathname);
@@ -63,7 +78,7 @@ function MainSideBar(): React.JSX.Element {
       label: "Main",
       items: [
         { label: "Dashboard", path: "/", icon: <LayoutDashboard /> },
-        { label: "Clients", path: "/clients", icon: <Users /> },
+        { label: "Integrations", path: "/integrations", icon: <Layers /> },
       ],
     },
     {
@@ -78,7 +93,6 @@ function MainSideBar(): React.JSX.Element {
       label: "Data",
       items: [
         { label: "Reports", path: "/reports", icon: <FileText /> },
-        { label: "Integrations", path: "/integrations", icon: <Layers /> },
         { label: "Database", path: "/database", icon: <Database /> },
       ],
     },
@@ -104,10 +118,9 @@ function MainSideBar(): React.JSX.Element {
           } h-screen`}
         >
           <SidebarContent
-            className={`bg-gradient-to-b from-black via-zinc-950 to-zinc-800 text-white ${
+            className={`bg-gradient-to-b from-black via-zinc-950 to-zinc-800 text-white transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
               collabsState ? "px-0" : "px-2"
-            }   
-  `}
+            }`}
           >
 
 {/* className="bg-black" */}

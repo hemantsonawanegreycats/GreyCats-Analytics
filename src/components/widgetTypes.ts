@@ -28,17 +28,20 @@ export interface TitleWidgetData {
   export interface ChartWidgetData {
     chartType?: string;
     data?: unknown;
+    chartImageUrl?: string; // Base64 image URL from html2canvas conversion
   }
   
   export interface MapWidgetData {
     location?: string;
     zoom?: number;
+    widgetImageUrl?: string; // Base64 image URL from html2canvas conversion
   }
   
   export interface MetricWidgetData {
     label: string;
     value: string | number;
     unit?: string;
+    widgetImageUrl?: string; // Base64 image URL from html2canvas conversion
   }
   
   export interface ImageWidgetData {

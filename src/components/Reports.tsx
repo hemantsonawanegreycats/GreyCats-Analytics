@@ -42,50 +42,49 @@ function Reports() {
         </div>
       </div>
       <div className="w-full px-5">
-       <TableComponent
-  header={[
-    "Name",
-    "Client",
-    "Type",
-    "Created",
-    "Schedule",
-    "Schedule Status",
-    "Client Group",
-    "Last Sent",
-    "Next Send Date",
-    "Awaiting Approval",
-    "Last Sent Status",
-  ]}
-  bodyData={[
-    {
-      name: "Monthly Performance Report",
-      client: "Acme Corp",
-      type: "Analytics",
-      created: "2025-10-12",
-      schedule: "Monthly",
-      scheduleStatus: "Active",
-      clientGroup: "Enterprise",
-      lastSent: "2025-10-01",
-      nextSendDate: "2025-11-01",
-      awaitingApproval: false,
-      lastSentStatus: "Delivered",
-    },
-    {
-      name: "Social Media Insights",
-      client: "Bright Studio",
-      type: "Marketing",
-      created: "2025-09-20",
-      schedule: "Weekly",
-      scheduleStatus: "Paused",
-      clientGroup: "Agency",
-      lastSent: "2025-10-30",
-      nextSendDate: "2025-11-07",
-      awaitingApproval: true,
-      lastSentStatus: "Pending",
-    },
-  ]}
-/>
-
+        <TableComponent
+          header={[
+            "Name",
+            "Client",
+            "Type",
+            "Created",
+            "Schedule",
+            "Schedule Status",
+            "Client Group",
+            "Last Sent",
+            "Next Send Date",
+            "Awaiting Approval",
+            "Last Sent Status",
+          ]}
+          bodyData={[
+            {
+              name: "Monthly Performance Report",
+              client: "Acme Corp",
+              type: "Analytics",
+              created: "2025-10-12",
+              schedule: "Monthly",
+              scheduleStatus: "Active",
+              clientGroup: "Enterprise",
+              lastSent: "2025-10-01",
+              nextSendDate: "2025-11-01",
+              awaitingApproval: false,
+              lastSentStatus: "Delivered",
+            },
+            {
+              name: "Social Media Insights",
+              client: "Bright Studio",
+              type: "Marketing",
+              created: "2025-09-20",
+              schedule: "Weekly",
+              scheduleStatus: "Paused",
+              clientGroup: "Agency",
+              lastSent: "2025-10-30",
+              nextSendDate: "2025-11-07",
+              awaitingApproval: true,
+              lastSentStatus: "Pending",
+            },
+          ]}
+        />
       </div>
     </div>
   );

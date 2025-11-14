@@ -9,4 +9,3 @@ export type ReportWidgetType =
   | "embed"
   | "custom"
   | "title";
-

@@ -47,14 +47,30 @@ const chartConfig: ChartConfig = {
   },
 }
 
-export function ChartPieInteractive() {
+type ChartPieInteractiveProps = {
+  onReady?: () => void;
+}
+
+export function ChartPieInteractive({ onReady }: ChartPieInteractiveProps = {}) {
   const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
+  const hasCalledReady = React.useRef(false)
 
   const activeIndex = React.useMemo(
     () => desktopData.findIndex((item) => item.month === activeMonth),
     [activeMonth]
   )
   const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+
+  // Handle chart ready callback - called once when animation completes
+  const handleAnimationEnd = React.useCallback(() => {
+    if (!hasCalledReady.current && onReady) {
+      hasCalledReady.current = true
+      // Small delay to ensure SVG is fully rendered
+      setTimeout(() => {
+        onReady()
+      }, 50)
+    }
+  }, [onReady])
 
   return (
     <div className="flex flex-col h-full  border bg-white rounded-2xl ">
@@ -92,6 +108,7 @@ export function ChartPieInteractive() {
               innerRadius={60}
               strokeWidth={5}
               activeIndex={activeIndex}
+              onAnimationEnd={handleAnimationEnd}
               activeShape={({ outerRadius = 0, ...props }: PieSectorDataItem) => (
                 <g>
                   <Sector {...props} outerRadius={outerRadius + 10} />
